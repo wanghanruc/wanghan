@@ -1,0 +1,485 @@
+---
+title: "LocalGLMnet及其LASSO正则"
+author: "王晗"
+date: "`r Sys.Date()`"
+---
+
+class: middle
+```{r RUC-logo, echo=FALSE}
+library(xaringanExtra)
+use_logo(image_url = 'plot/RUC.png', width = '80px', 
+         position = css_position(top = '2.3em', right = '1.5em'))
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+## **背景**：机器学习模型在预测能力上优于传统的回归模型，然而由于其解释能力差，被称为“**黑匣子**”
+
+---
+
+class: center, middle
+
+# 打开“黑匣子”！
+
+```{r blackbox, echo=F, fig.align='center', out.width='100%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/blackbox.png')
+```
+
+---
+
+## 研究现状
+
+1. 后验解释性（Post-Hoc Interpretability）
+
+  设计后验的模型解释工具
+
+--
+
+1. 内禀解释性（Intrinsic Interpretability）
+
+  设计易解释的模型架构
+
+
+---
+
+## 后验解释性（Post-Hoc Interpretability）
+
+### 全局解释性（Global）
+
+--
+
+.pull-left[
+- 变量重要性（VI）
+
+  特征分裂次数或分裂后的信息增益
+
+- 2001，置换重要性（Permutation Importance）
+
+  置换模型（随机打乱某特征取值）损失和原始模型损失的差异
+
+----
+
+- 2001，部分依赖图（Partial Dependence Plot，PDP）
+
+- 2015，个体条件期望图（Individual Conditional Expectations，ICE）
+
+]
+
+.pull-right[
+- 2020，累积局部效应图（Accumulated Local Effects，ALE）
+
+  可消除变量相关性的干扰，剥离出特征的纯粹影响。
+  
+  将特征划分为一系列小的区间，指定某一区间，对落在该区间的每个样本点，计算模型在区间两端点预测值的差。对落在该区间的所有样本点，将前述差值取平均即为局部效应（Local Effect），反映特征在该区间对预测变量的影响。
+  
+  将各个区间的局部效应累积，能反映该特征对预测变量的整体影响。
+]
+
+
+---
+
+## 后验解释性（Post-Hoc Interpretability）
+
+### 局部解释性（Local）
+
+--
+
+- 2016，LIME（Local Interpretable Model-agnostic Explanation）
+
+  可理解为局域的代理模型（Surrogate Model）。
+  
+  1. 选取目标样本，将输入值在其邻域内做微小扰动，从而构建新的建模数据集，并根据扰动点到原始数据点的距离分配权重。
+  
+  1. 基于新数据集训练一个代理模型。
+
+- 2017，SHAP（SHapley Additive exPlanation）
+
+  主要思想来源于Shapley在1953年创造的Shapley值。Shapley值来自合作博弈论（cooperative game theory），旨在基于各成员的贡献提供一个公平的分配。
+
+---
+
+## 后验解释性（Post-Hoc Interpretability）
+
+### Shapley值思想：萧峰虚竹段誉三兄弟大战辽兵
+
+--
+
+.pull-left[
+- 萧峰 = 300
+
+- 虚竹 = 200
+
+- 段誉 = 100
+
+- 萧峰+虚竹 = 700
+
+- 萧峰+段誉 = 500
+
+- 虚竹+段誉 = 350
+
+- 萧峰+虚竹+段誉 = 1000
+]
+
+--
+
+.pull-right[
+顺序|萧峰|虚竹|段誉
+:---:|---:|---:|---:
+萧峰+虚竹+段誉|**300**|400|300
+萧峰+段誉+虚竹|**300**|200|500
+虚竹+萧峰+段誉|500|**200**|300
+虚竹+段誉+萧峰|650|**200**|150
+段誉+萧峰+虚竹|400|500|**100**
+段誉+虚竹+萧峰|650|250|**100**
+贡献|`r round(mean(c(300,300,500,650,400,650)),0)`|`r round(mean(c(400,200,200,200,500,250)),0)`|`r round(mean(c(300,500,300,150,100,100)),0)`
+]
+
+---
+
+## 内禀解释性（Intrinsic Interpretability）
+
+--
+
+.pull-left[
+- 1986，决策树
+]
+
+---
+
+## 内禀解释性（Intrinsic Interpretability）
+
+.pull-left[
+
+- 1986，决策树
+
+----
+
+- 2019，CANN模型（将GLM嵌入到神经网络中）
+
+  优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。
+
+]
+
+.pull-right[
+```{r CANN, echo=F, fig.align='center', fig.cap='CANN模型结构',out.height='100%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/CANN.png')
+```
+]
+
+---
+
+## 内禀解释性（Intrinsic Interpretability）
+
+.pull-left[
+
+- 1986，决策树
+
+----
+
+- 2019，CANN模型（将GLM嵌入到神经网络中）
+
+  优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。
+
+----
+
+- 2019，可解释神经网络（xNN）
+]
+
+.pull-right[
+```{r xNN, echo=F, fig.align='center', fig.cap='xNN模型结构', out.height='100%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/xNN.png')
+```
+]
+
+---
+
+## 内禀解释性（Intrinsic Interpretability）
+
+.pull-left[
+
+- 1986，决策树
+
+----
+
+- 2019，CANN模型（将GLM嵌入到神经网络中）
+
+  优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。
+  
+----
+  
+- 2019，可解释神经网络（xNN）
+
+- 2021，神经可加模型（NAM）
+
+xNN和NAM的共同点都是**通过相互分离的并行网络处理特征成分的不同子集**，一定程度上限制了变量间交互作用的提取。
+]
+
+.pull-right[
+```{r NAM, echo=F, fig.align='center', fig.cap='NAM模型结构',out.height='100%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/NAM.png')
+```
+]
+---
+
+## 内禀解释性（Intrinsic Interpretability）
+
+- 1986，决策树
+
+----
+
+- 2019，CANN模型（将GLM嵌入到神经网络中）
+
+  优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。
+  
+----
+  
+- 2019，可解释神经网络（xNN）
+
+- 2021，神经可加模型（NAM）
+
+  xNN和NAM的共同点都是**通过相互分离的并行网络处理特征成分的不同子集**，一定程度上限制了变量间交互作用的提取。
+  
+----
+
+- 2021，CAXNN模型（用xNN拟合CANN中的非线性分量）
+
+--
+
+  同理可得CANAM？
+
+---
+class:middle,center,inverse
+
+# LocalGLMnet
+
+---
+
+class:middle,center,inverse
+
+# LocalGLMnet
+
+# ≈
+
+# DNN的拟合能力
+
+--
+
+# +
+
+# GLM的解释能力
+
+---
+class: middle
+
+```{r LGN, echo=F, fig.align='center', fig.cap='LocalGLMnet模型结构', out.width='90%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/LGN.png')
+```
+
+---
+
+## 模型简介
+
+LocalGLMnet模型可以理解为一种特殊的GLM，其回归系数由神经网络训练，且与特征 $\pmb x$ 相关，即 $\beta_j=\beta_j(\pmb x)$ 。
+
+严格讲，LocalGLMnet不再是线性模型，因其失掉了“参数线性”。其结构可表示为：
+
+$$
+\pmb x\rightarrow g(\mu(\pmb x))=\beta_0+\langle\pmb\beta(\pmb x),x\rangle
+$$
+
+作为对比，GLM的结构可表示为： $\pmb x\rightarrow g(\mu(\pmb x))=\beta_0+\langle\pmb\beta,x\rangle$ 
+
+上述结构是一个带有**跳跃连接**的特殊的DNN。
+
+- 首先，特征 $\pmb x$ 通过 $d$ 层全连接网络得到 $\pmb \beta(\pmb x)\in \mathbb R^q$ ;
+- 然后，特征 $\pmb x$ 跳过所有全连接层直接连到输出层，与 $\pmb \beta(\pmb x)$ 作点乘。
+
+自然地， $\pmb \beta(\pmb x)$ 就可以看作 $\pmb x$ 的“回归系数”，本文称之为**回归注意力**<sup>1</sup>（regression attention）。
+
+.footnote[
+[1] 若参数与特征 $x$ 不相关，称 $\beta$ **回归系数**；若参数与特征 $x$ 相关，称 $\beta(\pmb x)$ **回归注意力**。
+]
+---
+```{r, include=FALSE}
+options(width = 60, height=20)
+```
+
+```{r lgn, message=FALSE, out.width=0.001}
+library(keras)
+Design <- layer_input(shape=8 , dtype='float32', name='Design')
+Attention <- Design %>%
+  layer_dense(units=15, activation='tanh', name='FNLayer1') %>%
+  layer_dense(units=10, activation='tanh', name='FNLayer2') %>%
+  layer_dense(units=8, activation='linear', name='Attention')
+Response <- list(Design, Attention) %>% 
+  layer_dot(axes=1, name='LocalGlm') %>%
+  layer_dense(units=1, activation='exponential', name='Response')
+keras_model(inputs=c(Design), outputs=c(Response))
+```
+
+---
+## 模型解释
+
+令 $q$ 为特征个数，取模型结构的某个可加项 $\beta_j( \pmb x)x_j,1\le j\le q$ 为例说明。
+
+- 若 $\beta_j(\pmb x)=\beta_j$ ，此时 $\beta_j$ 为 $x_j$ 的回归系数，含义同线性模型；
+
+- 若 $\beta_j(\pmb x)\equiv0$ ，则 $x_j$ 应当从模型中剔除；
+
+- 若 $\beta_j(\pmb x)=\beta_j(x_j)$ ，则 $x_j$ 与其他特征无交互作用。定义梯度
+    
+    $\nabla\beta_j(\pmb x)=\big(\nabla \beta_j(\pmb x)_1,…,\nabla \beta_j(\pmb x)_q\big)^T=\big(\frac{\partial}{\partial x_1} \beta_j(\pmb x),…,\frac{\partial}{\partial x_q} \beta_j(\pmb x)\big)^T\in\mathbb R^q$
+
+	- 若 $\nabla\beta_j(\pmb x)_j\equiv0$ ，则 $x_j$ 为线性项；
+	- 若 $\nabla\beta_j(\pmb x)_j\equiv C\ne0$ ，则 $x_j$ 为二次项；
+	- 若 $\nabla\beta_j(\pmb x)_k=\nabla\beta_k(\pmb x)_j\equiv0,\ 1\le j\ne k\le q$ ，则 $x_j,x_k$ 无交互作用；
+	- 若 $\nabla\beta_j(\pmb x)_k\equiv C\ne0$ ，则 $x_j,x_k$ 以 $x_jx_k$ 的形式存在于模型中；
+	- 若 $\nabla\beta_j(\pmb x)_k=Cx_k$ ，则 $x_j,x_k$ 以 $x_jx_k^2$ 的形式存在于模型中。
+	
+---
+##  正则化
+
+1. 弹性网（Elastic Net）正则
+
+  $$\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\eta\big((1-\alpha)||\beta(\pmb x_i)||_2^2+\alpha||\beta(\pmb x_i)||_1\big)$$
+
+  其中 $\eta>0\wedge\alpha\in[0,1]$ 。
+
+  - $\alpha=0$ 时退化为岭正则， $\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\eta||\beta(\pmb x_i)||_2^2$ 
+
+  - $\alpha=1$ 时退化为LASSO正则， $\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\eta||\beta(\pmb x_i)||_1$ 。
+
+--
+
+2. 组LASSO正则
+
+  $$\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\sum_{k=1}^K\eta_k||\beta_k(\pmb x_i)||_2$$
+---
+
+## LassoNet
+
+.pull-left[
+$$\pmb x\rightarrow \pmb\beta^T\pmb x+\Psi_W(\pmb x)\\\underset{W,\pmb \beta}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\pmb \beta}(\pmb x_i)\big)+\eta||\pmb \beta||_1\\subject\ to\ ||W_j^{(1)}||_\infty\le M|\beta_j|,\ j=1,...,q$$
+]
+
+.pull-right[
+```{r LassoNet, echo=F, fig.align='center',fig.cap='LassoNet模型结构', out.width='94%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/LassoNet.png')
+```
+]
+
+--
+
+|Lasso-LocalGLMnet|LassoNet
+---|:---:|:---:
+正则化|激活正则|权重正则
+参数| $\eta$ | $\eta,M$ 
+估参方法|梯度下降|近端梯度下降 (proximal gradient descent)
+方法有效性|较强|受非线性效应及变量间交互效应的影响较大
+拓展性|强|弱
+
+---
+
+## 模拟数据分析
+
+--
+
+生成标准正态变量 $x_1,…,x_8$ ，其中 $corr(x_2,x_8)=0.5$ ，其余变量间均不相关。
+
+数据量为20万，其中训练集为10万，测试集为10万。回归函数形式为：
+
+--
+
+$$
+\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6
+$$
+$$
+y\sim \rm N\big(\mu(x),1\big)
+$$
+--
+
+<center>基于模拟数据的各模型均方误差</center>
+
+  |训练集MSE|测试集MSE
+---        |---:  |---:
+真实模型   |1.0023|0.9955
+空模型     |1.7907|1.7916
+GLM        |1.5241|1.5274
+LocalGLMnet|1.0023|1.0047
+
+---
+
+## 模拟数据分析
+
+$\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6$
+
+.pull-left[
+
+```{r regression attention, echo=F, fig.align='center', fig.cap='各变量的回归注意力', out.width='120%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/regression attention.png')
+```
+]
+
+.pull-right[
+
+```{r feature contribution, echo=F, fig.align='center', fig.cap='各变量的特征贡献', out.width='100%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/feature contribution.png')
+```
+]
+---
+
+## 模拟数据分析 
+
+$\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6$ 
+
+```{r interactions, echo=F, fig.align='center', fig.cap='各变量间的交互效应', out.width='45%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/interaction strength.png')
+```
+
+---
+
+## 模拟数据分析
+
+$\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6$ 
+
+变量重要性: $VI_j(\eta)=\frac{1}{n}∑_{i=1}^n|\hat{\beta}_j^{(\eta)}(\pmb x_i)|$    
+
+```{r variable importance, echo=F, fig.align='center', fig.cap='施加LASSO正则的变量重要性', out.width='50%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/variable importance.png')
+```
+
+---
+
+## 分类变量处理
+
+1. LocalGLMnet：**one-hot encoding**（P20）
+
+ ```{r reason1, echo=F, fig.align='center', out.width='80%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/reason1.png')
+ ```
+
+1. Lasso-LocalGLMnet：**scaled dummy-encoding**（P8）
+
+ ```{r reason2, echo=F, fig.align='center', out.width='80%'}
+knitr::opts_chunk$set(fig.pos = '!H', out.extra = '')
+knitr::include_graphics('plot/reason2.png')
+ ```
+
+画图试验
+
+```{r}
+plot(1:10)
+```

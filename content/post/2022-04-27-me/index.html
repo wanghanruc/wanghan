@@ -1,0 +1,496 @@
+---
+title: Me
+author: 王晗
+date: '2022-04-27'
+slug: me
+categories:
+  - Me
+tags: []
+---
+
+
+
+<p>class: middle</p>
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 80px;
+height: 128px;
+z-index: 0;
+background-image: url(plot/RUC.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:2.3em;right:1.5em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+<div id="背景机器学习模型在预测能力上优于传统的回归模型然而由于其解释能力差被称为黑匣子" class="section level2">
+<h2><strong>背景</strong>：机器学习模型在预测能力上优于传统的回归模型，然而由于其解释能力差，被称为“<strong>黑匣子</strong>”</h2>
+<hr />
+<p>class: center, middle</p>
+</div>
+<div id="打开黑匣子" class="section level1">
+<h1>打开“黑匣子”！</h1>
+<p><img src="plot/blackbox.png" width="100%" style="display: block; margin: auto;" /></p>
+<hr />
+<div id="研究现状" class="section level2">
+<h2>研究现状</h2>
+<ol style="list-style-type: decimal">
+<li>后验解释性（Post-Hoc Interpretability）</li>
+</ol>
+<p>设计后验的模型解释工具</p>
+<p>–</p>
+<ol style="list-style-type: decimal">
+<li>内禀解释性（Intrinsic Interpretability）</li>
+</ol>
+<p>设计易解释的模型架构</p>
+<hr />
+</div>
+<div id="后验解释性post-hoc-interpretability" class="section level2">
+<h2>后验解释性（Post-Hoc Interpretability）</h2>
+<div id="全局解释性global" class="section level3">
+<h3>全局解释性（Global）</h3>
+<p>–</p>
+<p>.pull-left[
+- 变量重要性（VI）</p>
+<p>特征分裂次数或分裂后的信息增益</p>
+<ul>
+<li><p>2001，置换重要性（Permutation Importance）</p>
+<p>置换模型（随机打乱某特征取值）损失和原始模型损失的差异</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>2001，部分依赖图（Partial Dependence Plot，PDP）</p></li>
+<li><p>2015，个体条件期望图（Individual Conditional Expectations，ICE）</p></li>
+</ul>
+<p>]</p>
+<p>.pull-right[
+- 2020，累积局部效应图（Accumulated Local Effects，ALE）</p>
+<p>可消除变量相关性的干扰，剥离出特征的纯粹影响。</p>
+<p>将特征划分为一系列小的区间，指定某一区间，对落在该区间的每个样本点，计算模型在区间两端点预测值的差。对落在该区间的所有样本点，将前述差值取平均即为局部效应（Local Effect），反映特征在该区间对预测变量的影响。</p>
+<p>将各个区间的局部效应累积，能反映该特征对预测变量的整体影响。
+]</p>
+<hr />
+</div>
+</div>
+<div id="后验解释性post-hoc-interpretability-1" class="section level2">
+<h2>后验解释性（Post-Hoc Interpretability）</h2>
+<div id="局部解释性local" class="section level3">
+<h3>局部解释性（Local）</h3>
+<p>–</p>
+<ul>
+<li><p>2016，LIME（Local Interpretable Model-agnostic Explanation）</p>
+<p>可理解为局域的代理模型（Surrogate Model）。</p>
+<ol style="list-style-type: decimal">
+<li><p>选取目标样本，将输入值在其邻域内做微小扰动，从而构建新的建模数据集，并根据扰动点到原始数据点的距离分配权重。</p></li>
+<li><p>基于新数据集训练一个代理模型。</p></li>
+</ol></li>
+<li><p>2017，SHAP（SHapley Additive exPlanation）</p>
+<p>主要思想来源于Shapley在1953年创造的Shapley值。Shapley值来自合作博弈论（cooperative game theory），旨在基于各成员的贡献提供一个公平的分配。</p></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="后验解释性post-hoc-interpretability-2" class="section level2">
+<h2>后验解释性（Post-Hoc Interpretability）</h2>
+<div id="shapley值思想萧峰虚竹段誉三兄弟大战辽兵" class="section level3">
+<h3>Shapley值思想：萧峰虚竹段誉三兄弟大战辽兵</h3>
+<p>–</p>
+<p>.pull-left[
+- 萧峰 = 300</p>
+<ul>
+<li><p>虚竹 = 200</p></li>
+<li><p>段誉 = 100</p></li>
+<li><p>萧峰+虚竹 = 700</p></li>
+<li><p>萧峰+段誉 = 500</p></li>
+<li><p>虚竹+段誉 = 350</p></li>
+<li><p>萧峰+虚竹+段誉 = 1000
+]</p></li>
+</ul>
+<p>–</p>
+<p>.pull-right[
+顺序|萧峰|虚竹|段誉
+:—:|—:|—:|—:
+萧峰+虚竹+段誉|<strong>300</strong>|400|300
+萧峰+段誉+虚竹|<strong>300</strong>|200|500
+虚竹+萧峰+段誉|500|<strong>200</strong>|300
+虚竹+段誉+萧峰|650|<strong>200</strong>|150
+段誉+萧峰+虚竹|400|500|<strong>100</strong>
+段誉+虚竹+萧峰|650|250|<strong>100</strong>
+贡献|467|292|242]</p>
+<hr />
+</div>
+</div>
+<div id="内禀解释性intrinsic-interpretability" class="section level2">
+<h2>内禀解释性（Intrinsic Interpretability）</h2>
+<p>–</p>
+<p>.pull-left[
+- 1986，决策树]</p>
+<hr />
+</div>
+<div id="内禀解释性intrinsic-interpretability-1" class="section level2">
+<h2>内禀解释性（Intrinsic Interpretability）</h2>
+<p>.pull-left[</p>
+<ul>
+<li>1986，决策树</li>
+</ul>
+<hr />
+<ul>
+<li><p>2019，CANN模型（将GLM嵌入到神经网络中）</p>
+<p>优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。</p></li>
+</ul>
+<p>]</p>
+.pull-right[
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:CANN"></span>
+<img src="plot/CANN.png" alt="CANN模型结构" width="334" height="100%"  />
+<p class="caption">
+Figure 1: CANN模型结构
+</p>
+</div>
+<p>]</p>
+<hr />
+</div>
+<div id="内禀解释性intrinsic-interpretability-2" class="section level2">
+<h2>内禀解释性（Intrinsic Interpretability）</h2>
+<p>.pull-left[</p>
+<ul>
+<li>1986，决策树</li>
+</ul>
+<hr />
+<ul>
+<li><p>2019，CANN模型（将GLM嵌入到神经网络中）</p>
+<p>优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。</p></li>
+</ul>
+<hr />
+<ul>
+<li>2019，可解释神经网络（xNN）
+]</li>
+</ul>
+.pull-right[
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:xNN"></span>
+<img src="plot/xNN.png" alt="xNN模型结构" width="434" height="100%"  />
+<p class="caption">
+Figure 2: xNN模型结构
+</p>
+</div>
+<p>]</p>
+<hr />
+</div>
+<div id="内禀解释性intrinsic-interpretability-3" class="section level2">
+<h2>内禀解释性（Intrinsic Interpretability）</h2>
+<p>.pull-left[</p>
+<ul>
+<li>1986，决策树</li>
+</ul>
+<hr />
+<ul>
+<li><p>2019，CANN模型（将GLM嵌入到神经网络中）</p>
+<p>优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>2019，可解释神经网络（xNN）</p></li>
+<li><p>2021，神经可加模型（NAM）</p></li>
+</ul>
+<p>xNN和NAM的共同点都是<strong>通过相互分离的并行网络处理特征成分的不同子集</strong>，一定程度上限制了变量间交互作用的提取。
+]</p>
+.pull-right[
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:NAM"></span>
+<img src="plot/NAM.png" alt="NAM模型结构" width="234" height="100%"  />
+<p class="caption">
+Figure 3: NAM模型结构
+</p>
+</div>
+</div>
+<div id="section" class="section level2">
+<h2>]</h2>
+</div>
+<div id="内禀解释性intrinsic-interpretability-4" class="section level2">
+<h2>内禀解释性（Intrinsic Interpretability）</h2>
+<ul>
+<li>1986，决策树</li>
+</ul>
+<hr />
+<ul>
+<li><p>2019，CANN模型（将GLM嵌入到神经网络中）</p>
+<p>优点：线性分量的预测可解释（自变量的线性组合），且线性分量和非线性分量对预测的贡献可比较。</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>2019，可解释神经网络（xNN）</p></li>
+<li><p>2021，神经可加模型（NAM）</p>
+<p>xNN和NAM的共同点都是<strong>通过相互分离的并行网络处理特征成分的不同子集</strong>，一定程度上限制了变量间交互作用的提取。</p></li>
+</ul>
+<hr />
+<ul>
+<li>2021，CAXNN模型（用xNN拟合CANN中的非线性分量）</li>
+</ul>
+<p>–</p>
+<p>同理可得CANAM？</p>
+<p>class:middle,center,inverse</p>
+</div>
+</div>
+<div id="localglmnet" class="section level1">
+<h1>LocalGLMnet</h1>
+</div>
+<div id="section-1" class="section level1">
+<h1>≈</h1>
+</div>
+<div id="dnn的拟合能力" class="section level1">
+<h1>DNN的拟合能力</h1>
+<p>–</p>
+</div>
+<div id="section-2" class="section level1">
+<h1>+</h1>
+</div>
+<div id="glm的解释能力" class="section level1">
+<h1>GLM的解释能力</h1>
+<div id="模型简介" class="section level2">
+<h2>模型简介</h2>
+<p>LocalGLMnet模型可以理解为一种特殊的GLM，其回归系数由神经网络训练，且与特征 <span class="math inline">\(\pmb x\)</span> 相关，即 <span class="math inline">\(\beta_j=\beta_j(\pmb x)\)</span> 。</p>
+<p>严格讲，LocalGLMnet不再是线性模型，因其失掉了“参数线性”。其结构可表示为：</p>
+<p><span class="math display">\[
+\pmb x\rightarrow g(\mu(\pmb x))=\beta_0+\langle\pmb\beta(\pmb x),x\rangle
+\]</span></p>
+<p>作为对比，GLM的结构可表示为： <span class="math inline">\(\pmb x\rightarrow g(\mu(\pmb x))=\beta_0+\langle\pmb\beta,x\rangle\)</span></p>
+<p>上述结构是一个带有<strong>跳跃连接</strong>的特殊的DNN。</p>
+<ul>
+<li>首先，特征 <span class="math inline">\(\pmb x\)</span> 通过 <span class="math inline">\(d\)</span> 层全连接网络得到 <span class="math inline">\(\pmb \beta(\pmb x)\in \mathbb R^q\)</span> ;</li>
+<li>然后，特征 <span class="math inline">\(\pmb x\)</span> 跳过所有全连接层直接连到输出层，与 <span class="math inline">\(\pmb \beta(\pmb x)\)</span> 作点乘。</li>
+</ul>
+<p>自然地， <span class="math inline">\(\pmb \beta(\pmb x)\)</span> 就可以看作 <span class="math inline">\(\pmb x\)</span> 的“回归系数”，本文称之为<strong>回归注意力</strong><sup>1</sup>（regression attention）。</p>
+<p>.footnote[
+[1] 若参数与特征 <span class="math inline">\(x\)</span> 不相关，称 <span class="math inline">\(\beta\)</span> <strong>回归系数</strong>；若参数与特征 <span class="math inline">\(x\)</span> 相关，称 <span class="math inline">\(\beta(\pmb x)\)</span> <strong>回归注意力</strong>。]
+—</p>
+<pre class="r"><code>library(keras)</code></pre>
+<pre><code>## Warning: 程辑包&#39;keras&#39;是用R版本4.0.5 来建造的</code></pre>
+<pre class="r"><code>Design &lt;- layer_input(shape=8 , dtype=&#39;float32&#39;, name=&#39;Design&#39;)
+Attention &lt;- Design %&gt;%
+  layer_dense(units=15, activation=&#39;tanh&#39;, name=&#39;FNLayer1&#39;) %&gt;%
+  layer_dense(units=10, activation=&#39;tanh&#39;, name=&#39;FNLayer2&#39;) %&gt;%
+  layer_dense(units=8, activation=&#39;linear&#39;, name=&#39;Attention&#39;)
+Response &lt;- list(Design, Attention) %&gt;% 
+  layer_dot(axes=1, name=&#39;LocalGlm&#39;) %&gt;%
+  layer_dense(units=1, activation=&#39;exponential&#39;, name=&#39;Response&#39;)
+keras_model(inputs=c(Design), outputs=c(Response))</code></pre>
+<pre><code>## Model: &quot;model&quot;
+## ____________________________________________________________
+## Layer (type)       Output Shape  Param  Connected to        
+## ============================================================
+## Design (InputLayer [(None, 8)]   0                          
+## ____________________________________________________________
+## FNLayer1 (Dense)   (None, 15)    135    Design[0][0]        
+## ____________________________________________________________
+## FNLayer2 (Dense)   (None, 10)    160    FNLayer1[0][0]      
+## ____________________________________________________________
+## Attention (Dense)  (None, 8)     88     FNLayer2[0][0]      
+## ____________________________________________________________
+## LocalGlm (Dot)     (None, 1)     0      Design[0][0]        
+##                                         Attention[0][0]     
+## ____________________________________________________________
+## Response (Dense)   (None, 1)     2      LocalGlm[0][0]      
+## ============================================================
+## Total params: 385
+## Trainable params: 385
+## Non-trainable params: 0
+## ____________________________________________________________</code></pre>
+</div>
+<div id="正则化" class="section level2">
+<h2>正则化</h2>
+<ol style="list-style-type: decimal">
+<li>弹性网（Elastic Net）正则</li>
+</ol>
+<p><span class="math display">\[\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\eta\big((1-\alpha)||\beta(\pmb x_i)||_2^2+\alpha||\beta(\pmb x_i)||_1\big)\]</span></p>
+<p>其中 <span class="math inline">\(\eta&gt;0\wedge\alpha\in[0,1]\)</span> 。</p>
+<ul>
+<li><p><span class="math inline">\(\alpha=0\)</span> 时退化为岭正则， <span class="math inline">\(\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\eta||\beta(\pmb x_i)||_2^2\)</span></p></li>
+<li><p><span class="math inline">\(\alpha=1\)</span> 时退化为LASSO正则， <span class="math inline">\(\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\eta||\beta(\pmb x_i)||_1\)</span> 。</p></li>
+</ul>
+<p>–</p>
+<ol start="2" style="list-style-type: decimal">
+<li>组LASSO正则</li>
+</ol>
+</div>
+<div id="undersetwbeta_0argminfrac1nsum_i1nlbigy_imu_wbeta_0pmb-x_ibigsum_k1keta_kbeta_kpmb-x_i_2" class="section level2">
+<h2><span class="math display">\[\underset{W,\beta_0}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\beta_0}(\pmb x_i)\big)+\sum_{k=1}^K\eta_k||\beta_k(\pmb x_i)||_2\]</span></h2>
+</div>
+<div id="lassonet" class="section level2">
+<h2>LassoNet</h2>
+<p>.pull-left[
+<span class="math display">\[\pmb x\rightarrow \pmb\beta^T\pmb x+\Psi_W(\pmb x)\\\underset{W,\pmb \beta}{\arg\min}\frac{1}{n}\sum_{i=1}^nL\big(Y_i,\mu_{W,\pmb \beta}(\pmb x_i)\big)+\eta||\pmb \beta||_1\\subject\ to\ ||W_j^{(1)}||_\infty\le M|\beta_j|,\ j=1,...,q\]</span>]</p>
+.pull-right[
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:LassoNet"></span>
+<img src="plot/LassoNet.png" alt="LassoNet模型结构" width="94%"  />
+<p class="caption">
+Figure 4: LassoNet模型结构
+</p>
+</div>
+<p>]</p>
+<p>–</p>
+<table>
+<thead>
+<tr class="header">
+<th>Lasso-LocalGLMnet</th>
+<th align="center">LassoNet</th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>正则化</td>
+<td align="center">激活正则</td>
+<td align="center">权重正则</td>
+</tr>
+<tr class="even">
+<td>参数</td>
+<td align="center"><span class="math inline">\(\eta\)</span></td>
+<td align="center"><span class="math inline">\(\eta,M\)</span></td>
+</tr>
+<tr class="odd">
+<td>估参方法</td>
+<td align="center">梯度下降</td>
+<td align="center">近端梯度下降 (proximal gradient descent)</td>
+</tr>
+<tr class="even">
+<td>方法有效性</td>
+<td align="center">较强</td>
+<td align="center">受非线性效应及变量间交互效应的影响较大</td>
+</tr>
+<tr class="odd">
+<td>拓展性</td>
+<td align="center">强</td>
+<td align="center">弱</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="模拟数据分析" class="section level2">
+<h2>模拟数据分析</h2>
+<p>–</p>
+<p>生成标准正态变量 <span class="math inline">\(x_1,…,x_8\)</span> ，其中 <span class="math inline">\(corr(x_2,x_8)=0.5\)</span> ，其余变量间均不相关。</p>
+<p>数据量为20万，其中训练集为10万，测试集为10万。回归函数形式为：</p>
+<p>–</p>
+<p><span class="math display">\[
+\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6
+\]</span>
+<span class="math display">\[
+y\sim \rm N\big(\mu(x),1\big)
+\]</span>
+–</p>
+<center>
+基于模拟数据的各模型均方误差
+</center>
+<table>
+<thead>
+<tr class="header">
+<th>训练集MSE</th>
+<th align="right">测试集MSE</th>
+<th align="right"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>真实模型</td>
+<td align="right">1.0023</td>
+<td align="right">0.9955</td>
+</tr>
+<tr class="even">
+<td>空模型</td>
+<td align="right">1.7907</td>
+<td align="right">1.7916</td>
+</tr>
+<tr class="odd">
+<td>GLM</td>
+<td align="right">1.5241</td>
+<td align="right">1.5274</td>
+</tr>
+<tr class="even">
+<td>LocalGLMnet</td>
+<td align="right">1.0023</td>
+<td align="right">1.0047</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="模拟数据分析-1" class="section level2">
+<h2>模拟数据分析</h2>
+<p><span class="math inline">\(\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6\)</span></p>
+<p>.pull-left[</p>
+<div class="figure" style="text-align: center">
+<img src="plot/regression%20attention.png" alt="各变量的回归注意力" width="120%"  />
+<p class="caption">
+(#fig:regression attention)各变量的回归注意力
+</p>
+</div>
+<p>]</p>
+<p>.pull-right[</p>
+<div class="figure" style="text-align: center">
+<img src="plot/feature%20contribution.png" alt="各变量的特征贡献" width="100%"  />
+<p class="caption">
+(#fig:feature contribution)各变量的特征贡献
+</p>
+</div>
+</div>
+<div id="section-3" class="section level2">
+<h2>]</h2>
+</div>
+<div id="模拟数据分析-2" class="section level2">
+<h2>模拟数据分析</h2>
+<p><span class="math inline">\(\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6\)</span></p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:interactions"></span>
+<img src="plot/interaction%20strength.png" alt="各变量间的交互效应" width="45%"  />
+<p class="caption">
+Figure 5: 各变量间的交互效应
+</p>
+</div>
+<hr />
+</div>
+<div id="模拟数据分析-3" class="section level2">
+<h2>模拟数据分析</h2>
+<p><span class="math inline">\(\mu(x)=\frac{1}{2}x_1-\frac{1}{4}x_2^2+\frac{1}{2}|x_3|\sin(2x_3)+\frac{1}{2}x_4 x_5+\frac{1}{8} x_5^2x_6\)</span></p>
+<p>变量重要性: <span class="math inline">\(VI_j(\eta)=\frac{1}{n}∑_{i=1}^n|\hat{\beta}_j^{(\eta)}(\pmb x_i)|\)</span></p>
+<div class="figure" style="text-align: center">
+<img src="plot/variable%20importance.png" alt="施加LASSO正则的变量重要性" width="50%"  />
+<p class="caption">
+(#fig:variable importance)施加LASSO正则的变量重要性
+</p>
+</div>
+<hr />
+</div>
+<div id="分类变量处理" class="section level2">
+<h2>分类变量处理</h2>
+<ol style="list-style-type: decimal">
+<li>LocalGLMnet：<strong>one-hot encoding</strong>（P20）</li>
+</ol>
+<p><img src="plot/reason1.png" width="80%"  style="display: block; margin: auto;" /></p>
+<ol style="list-style-type: decimal">
+<li>Lasso-LocalGLMnet：<strong>scaled dummy-encoding</strong>（P8）</li>
+</ol>
+<p><img src="plot/reason2.png" width="80%"  style="display: block; margin: auto;" /></p>
+<p>画图试验</p>
+<pre class="r"><code>plot(1:10)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672"  /></p>
+</div>
+</div>
