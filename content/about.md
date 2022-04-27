@@ -20,5 +20,3 @@ title: About Me
 # 臭美的我👇（美颜过了头，胡歌既视感hh）
 
 ![](https://wx1.sinaimg.cn/mw2000/006F8XZsly1h1hdfrxryaj30u0140q9z.jpg)
-
-![4](1.jpg)
