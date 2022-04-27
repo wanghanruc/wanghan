@@ -1,5 +1,0 @@
-load('D:/Files_Laptop/smy/CarInsurance.Rdata')
-par(mfrow=c(1,2)) #把两张图合在一起
-hist(NCD[age==0])
-hist(NCD[age==1])
-par(mfrow=c(1,1)) #恢复默认输出
